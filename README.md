@@ -36,3 +36,9 @@ docker compose exec mysql mysql -ulpf -plpf_secret lpf
 ```
 
 `docker compose down -v` apaga o banco, inclusive o que foi editado no painel.
+
+## Hospedar na HostGator
+
+A publicação segue o mesmo caminho da Acagil, da Clinic Plus e do portfólio: HostGator compartilhada, Git e SSH. O site e o painel ficam juntos em `https://lpf.lsgontecnologia.com.br`, com document root em `site-lagoparanoafishing/backend/public`.
+
+O passo a passo da primeira subida está em [docs/HOSTGATOR.md](docs/HOSTGATOR.md). Cada melhoria depois disso segue [docs/ATUALIZAR.md](docs/ATUALIZAR.md).
