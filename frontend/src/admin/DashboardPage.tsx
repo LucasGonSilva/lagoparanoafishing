@@ -10,6 +10,9 @@ const cards = [
   ['species', 'Espécies', '/admin/especies'],
   ['posts', 'Notícias', '/admin/noticias'],
   ['gallery', 'Fotos', '/admin/galeria'],
+  ['links', 'Links', '/admin/links'],
+  ['partners', 'Parcerias', '/admin/parcerias'],
+  ['people', 'Pessoas', '/admin/pessoas'],
   ['faqs', 'Perguntas', '/admin/perguntas'],
 ]
 
@@ -33,7 +36,7 @@ export function DashboardPage() {
         <Link className="btn btn-ghost" to="/admin/textos">Editar textos</Link>
       </div>
       <p className="hint" style={{ maxWidth: '40rem', marginBottom: '1.4rem' }}>
-        Tudo que está no ar sai daqui: textos, regras, eventos por ano, produtos, pescarias de clientes, espécies, fotos, notícias e perguntas. A senha inicial se troca em Acesso.
+        Tudo que está no ar sai daqui: textos, regras, eventos por ano, produtos, pescarias de clientes, espécies, fotos, notícias, links, parcerias, pessoas do grupo e perguntas. A senha inicial se troca em Acesso.
       </p>
       {error && <p className="alert">{error}</p>}
       <div className="stats">

@@ -8,9 +8,12 @@ use App\Models\ClubRule;
 use App\Models\Faq;
 use App\Models\FishingEvent;
 use App\Models\GalleryItem;
+use App\Models\GroupMember;
+use App\Models\Partner;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\Species;
+use App\Models\UsefulLink;
 use App\Support\Media;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -80,6 +83,9 @@ class ContentController extends Controller
             'gallery' => [GalleryItem::class, [['position', 'asc'], ['id', 'asc']]],
             'faqs' => [Faq::class, [['position', 'asc'], ['id', 'asc']]],
             'clients' => [ClientTrip::class, [['raw', 'fished_on IS NULL'], ['fished_on', 'desc'], ['id', 'desc']]],
+            'links' => [UsefulLink::class, [['position', 'asc'], ['id', 'asc']]],
+            'partners' => [Partner::class, [['position', 'asc'], ['id', 'asc']]],
+            'people' => [GroupMember::class, [['position', 'asc'], ['id', 'asc']]],
             default => abort(404),
         };
     }
@@ -106,6 +112,8 @@ class ContentController extends Controller
                 'status' => ['required', Rule::in(['agendado', 'realizado', 'cancelado'])],
                 'year' => ['required', 'integer', 'min:2000', 'max:2100'],
                 'image_path' => $image,
+                'photos' => ['nullable', 'array', 'max:30'],
+                'photos.*' => ['string', 'max:255', 'regex:/^midia\/[A-Za-z0-9][A-Za-z0-9._-]*$/'],
                 'active' => ['sometimes', 'boolean'],
             ],
             'products' => [
@@ -175,6 +183,31 @@ class ContentController extends Controller
                 'position' => ['nullable', 'integer', 'min:0', 'max:9999'],
                 'active' => ['sometimes', 'boolean'],
             ],
+            'links' => [
+                'title' => ['required', 'string', 'max:160'],
+                'details' => ['nullable', 'string', 'max:5000'],
+                'url' => ['required', 'url', 'max:255'],
+                'position' => ['nullable', 'integer', 'min:0', 'max:9999'],
+                'active' => ['sometimes', 'boolean'],
+            ],
+            'partners' => [
+                'name' => ['required', 'string', 'max:160'],
+                'slug' => ['nullable', 'string', 'max:180'],
+                'summary' => ['required', 'string', 'max:400'],
+                'body' => ['nullable', 'string', 'max:20000'],
+                'url' => ['nullable', 'url', 'max:255'],
+                'image_path' => $image,
+                'position' => ['nullable', 'integer', 'min:0', 'max:9999'],
+                'active' => ['sometimes', 'boolean'],
+            ],
+            'people' => [
+                'name' => ['required', 'string', 'max:160'],
+                'nickname' => ['nullable', 'string', 'max:160'],
+                'role' => ['required', 'string', 'max:80'],
+                'note' => ['nullable', 'string', 'max:2000'],
+                'position' => ['nullable', 'integer', 'min:0', 'max:9999'],
+                'active' => ['sometimes', 'boolean'],
+            ],
             default => abort(404),
         };
 
@@ -192,6 +225,17 @@ class ContentController extends Controller
 
         if ($type === 'posts' && empty($data['published_at'])) {
             $data['published_at'] = now();
+        }
+
+        if ($type === 'people') {
+            $data['name'] = trim($data['name']);
+            $data['role'] = trim($data['role']);
+            $nickname = trim((string) ($data['nickname'] ?? ''));
+            $data['nickname'] = $nickname === '' ? null : $nickname;
+        }
+
+        if ($type === 'events') {
+            $data['photos'] = array_values($data['photos'] ?? []);
         }
 
         if ($type === 'clients') {
@@ -242,7 +286,7 @@ class ContentController extends Controller
 
     private function storedFiles(string $type, object $item): array
     {
-        if ($type === 'clients') {
+        if ($type === 'clients' || $type === 'events') {
             return $item->storedFiles();
         }
 

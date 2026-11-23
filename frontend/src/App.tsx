@@ -14,6 +14,9 @@ import { GalleryPage } from './pages/GalleryPage'
 import { GroupPage } from './pages/GroupPage'
 import { HomePage } from './pages/HomePage'
 import { JoinPage } from './pages/JoinPage'
+import { LinksPage } from './pages/LinksPage'
+import { PartnerPage } from './pages/PartnerPage'
+import { PartnersPage } from './pages/PartnersPage'
 import { NewsListPage } from './pages/NewsListPage'
 import { NewsPage } from './pages/NewsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -50,6 +53,9 @@ export function App() {
           <Route path="galeria" element={<GalleryPage />} />
           <Route path="noticias" element={<NewsListPage />} />
           <Route path="noticias/:slug" element={<NewsPage />} />
+          <Route path="links" element={<LinksPage />} />
+          <Route path="parcerias" element={<PartnersPage />} />
+          <Route path="parcerias/:slug" element={<PartnerPage />} />
           <Route path="participar" element={<JoinPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
@@ -65,6 +71,9 @@ export function App() {
             <Route path="especies" element={<ResourcePage type="species" />} />
             <Route path="galeria" element={<ResourcePage type="gallery" />} />
             <Route path="noticias" element={<ResourcePage type="posts" />} />
+            <Route path="links" element={<ResourcePage type="links" />} />
+            <Route path="parcerias" element={<ResourcePage type="partners" />} />
+            <Route path="pessoas" element={<ResourcePage type="people" />} />
             <Route path="perguntas" element={<ResourcePage type="faqs" />} />
             <Route path="acesso" element={<ProfilePage />} />
           </Route>
