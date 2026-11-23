@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::put('/profile', [AuthController::class, 'update']);
     Route::get('/users', [AuthController::class, 'index']);
     Route::post('/users', [AuthController::class, 'store']);
+    Route::put('/users/{id}', [AuthController::class, 'updateUser'])->whereNumber('id');
     Route::delete('/users/{id}', [AuthController::class, 'destroy'])->whereNumber('id');
     Route::get('/stats', [DashboardController::class, 'index']);
     Route::get('/settings', [SettingController::class, 'show']);

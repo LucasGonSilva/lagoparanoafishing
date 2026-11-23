@@ -1,0 +1,15 @@
+---
+description: Depois de cada alteração, entregar o passo a passo para publicar na HostGator.
+alwaysApply: true
+---
+
+# Publicar na produção
+
+Depois de cada alteração no site, a resposta final traz o passo a passo para aplicar em https://lagoparanoafishing.lsgontecnologia.com.br. A ordem completa está em `docs/ATUALIZAR.md`. Recorte só o que esta mudança exige.
+
+- Produção puxa a branch `main` em `~/lagoparanoafishing`. PHP com `ea-php84`. Não rode `db:seed` de novo.
+- Mudou `backend/` (PHP, rotas, migration): commit na `main`, no SSH `git pull origin main`, `composer install` se houver dependência, `ea-php84 artisan migrate --force` se houver migration, `ea-php84 artisan config:cache`.
+- Mudou `frontend/`: no Ubuntu `sh scripts/build-hostgator.sh` e os dois `rsync` de `docs/ATUALIZAR.md`. O front não vai no Git.
+- Mudou `backend/public/.htaccess`: ele segue no `git pull`. Não envie esse arquivo por `rsync`.
+- Não commite nem faça push sem o usuário pedir. O passo a passo deixa o commit e o push explícitos para ele executar.
+- Confira `/`, `/up`, `/api/site` e a tela que mudou.
