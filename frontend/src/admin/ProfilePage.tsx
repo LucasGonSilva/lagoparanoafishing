@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { api } from '../api'
 import type { AdminUser } from '../types'
+import { PasswordInput } from './PasswordInput'
 
 export function ProfilePage() {
   const [me, setMe] = useState<AdminUser | null>(null)
@@ -176,16 +177,16 @@ export function ProfilePage() {
         </label>
         <label className="field">
           <span>Senha atual</span>
-          <input type="password" autoComplete="current-password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} />
+          <PasswordInput autoComplete="current-password" value={currentPassword} onChange={setCurrentPassword} />
           <p className="hint">Obrigatória para mudar o e-mail ou a senha.</p>
         </label>
         <label className="field">
           <span>Nova senha</span>
-          <input type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} />
+          <PasswordInput autoComplete="new-password" value={password} onChange={setPassword} />
         </label>
         <label className="field">
           <span>Confirmar nova senha</span>
-          <input type="password" autoComplete="new-password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} />
+          <PasswordInput autoComplete="new-password" value={confirmation} onChange={setConfirmation} />
         </label>
         <button className="btn btn-gold" type="submit" disabled={pending}>Salvar acesso</button>
       </form>
@@ -201,11 +202,11 @@ export function ProfilePage() {
         </label>
         <label className="field">
           <span>Senha</span>
-          <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required />
+          <PasswordInput value={newPassword} onChange={setNewPassword} required />
         </label>
         <label className="field">
           <span>Confirmar senha</span>
-          <input type="password" value={newConfirmation} onChange={(event) => setNewConfirmation(event.target.value)} required />
+          <PasswordInput value={newConfirmation} onChange={setNewConfirmation} required />
         </label>
         <button className="btn btn-ghost" type="submit" disabled={pending}>Criar acesso</button>
       </form>
@@ -234,12 +235,12 @@ export function ProfilePage() {
                 </label>
                 <label className="field">
                   <span>Nova senha</span>
-                  <input type="password" autoComplete="new-password" value={editPassword} onChange={(event) => setEditPassword(event.target.value)} />
+                  <PasswordInput autoComplete="new-password" value={editPassword} onChange={setEditPassword} />
                   <p className="hint">Deixe em branco para manter a senha atual.</p>
                 </label>
                 <label className="field">
                   <span>Confirmar nova senha</span>
-                  <input type="password" autoComplete="new-password" value={editConfirmation} onChange={(event) => setEditConfirmation(event.target.value)} />
+                  <PasswordInput autoComplete="new-password" value={editConfirmation} onChange={setEditConfirmation} />
                 </label>
                 <div className="form-actions">
                   <button className="btn btn-gold" type="submit" disabled={pending}>Salvar cadastro</button>
