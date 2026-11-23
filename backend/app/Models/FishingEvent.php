@@ -24,6 +24,7 @@ class FishingEvent extends Model
         'status',
         'year',
         'image_path',
+        'photos',
         'active',
     ];
 
@@ -33,6 +34,7 @@ class FishingEvent extends Model
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
             'year' => 'integer',
+            'photos' => 'array',
             'active' => 'boolean',
         ];
     }
@@ -44,6 +46,37 @@ class FishingEvent extends Model
                 $event->year = $event->starts_at->timezone(config('app.timezone'))->year;
             }
         });
+    }
+
+    public function storedFiles(): array
+    {
+        $paths = [];
+        if (is_string($this->image_path) && $this->image_path !== '') {
+            $paths[] = $this->image_path;
+        }
+        foreach ($this->photos ?? [] as $path) {
+            if (is_string($path) && $path !== '') {
+                $paths[] = $path;
+            }
+        }
+
+        return $paths;
+    }
+
+    public function photoList(): array
+    {
+        $photos = [];
+        foreach ($this->photos ?? [] as $path) {
+            if (! is_string($path) || $path === '') {
+                continue;
+            }
+            $photos[] = [
+                'path' => $path,
+                'url' => Media::url($path),
+            ];
+        }
+
+        return $photos;
     }
 
     public function toApiArray(): array
@@ -61,6 +94,7 @@ class FishingEvent extends Model
             'year' => $this->year,
             'image_path' => $this->image_path,
             'image_url' => Media::url($this->image_path),
+            'photos' => $this->photoList(),
             'active' => $this->active,
             'updated_at' => Dates::iso($this->updated_at),
         ];

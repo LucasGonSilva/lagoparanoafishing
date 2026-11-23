@@ -8,9 +8,12 @@ use App\Models\ClubRule;
 use App\Models\Faq;
 use App\Models\FishingEvent;
 use App\Models\GalleryItem;
+use App\Models\GroupMember;
+use App\Models\Partner;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\Species;
+use App\Models\UsefulLink;
 
 class DashboardController extends Controller
 {
@@ -26,6 +29,9 @@ class DashboardController extends Controller
                 'gallery' => GalleryItem::query()->count(),
                 'faqs' => Faq::query()->count(),
                 'clients' => ClientTrip::query()->count(),
+                'links' => UsefulLink::query()->count(),
+                'partners' => Partner::query()->count(),
+                'people' => GroupMember::query()->count(),
             ],
         ]);
     }

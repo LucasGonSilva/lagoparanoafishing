@@ -21,6 +21,7 @@ export type FishingEvent = {
   year: number
   image_path: string | null
   image_url: string | null
+  photos: TripPhoto[]
   active: boolean
 }
 
@@ -104,6 +105,38 @@ export type ClientTrip = {
   active: boolean
 }
 
+export type UsefulLink = {
+  id: number
+  title: string
+  details: string | null
+  url: string
+  position: number
+  active: boolean
+}
+
+export type Partner = {
+  id: number
+  name: string
+  slug: string
+  summary: string
+  body: string | null
+  url: string | null
+  image_path: string | null
+  image_url: string | null
+  position: number
+  active: boolean
+}
+
+export type GroupPerson = {
+  id: number
+  name: string
+  nickname: string | null
+  role: string
+  note: string | null
+  position: number
+  active: boolean
+}
+
 export type Faq = {
   id: number
   question: string
@@ -121,6 +154,9 @@ export type SiteData = {
   posts: Post[]
   gallery: GalleryItem[]
   clients: ClientTrip[]
+  links: UsefulLink[]
+  partners: Partner[]
+  people: GroupPerson[]
   faqs: Faq[]
 }
 

@@ -38,6 +38,8 @@ const links = [
   ['/especies', 'Espécies'],
   ['/galeria', 'Galeria'],
   ['/noticias', 'Notícias'],
+  ['/links', 'Links'],
+  ['/parcerias', 'Parcerias'],
   ['/participar', 'Participar'],
 ]
 
@@ -120,7 +122,7 @@ export function SiteLayout() {
         </div>
       </div>
       <header className={open ? 'site-header is-open' : 'site-header'}>
-        <div className="wrap">
+        <div className="wrap header-bar">
           <Link className="brand" to="/">
             <span className="brand-mark"><img src="/logo.png" alt="" /></span>
             <span>
@@ -131,14 +133,16 @@ export function SiteLayout() {
           <button className="nav-toggle" type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
             {open ? 'Fechar' : 'Menu'}
           </button>
-          <nav className="nav-links" aria-label="Principal">
+        </div>
+        <nav className="nav-links" aria-label="Principal">
+          <div className="wrap">
             {links.map(([to, label]) => (
               <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => (isActive ? 'is-active' : undefined)}>
                 {label}
               </NavLink>
             ))}
-          </nav>
-        </div>
+          </div>
+        </nav>
       </header>
       <main id="conteudo">
         <Outlet />

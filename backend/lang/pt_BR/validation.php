@@ -74,6 +74,11 @@ return [
         'fished_on' => 'data da pescaria',
         'notes' => 'relato',
         'photos' => 'fotos',
+        'details' => 'informação',
+        'url' => 'link',
+        'nickname' => 'como é conhecido',
+        'role' => 'papel',
+        'note' => 'nota',
         'videos' => 'vídeos',
     ],
 ];

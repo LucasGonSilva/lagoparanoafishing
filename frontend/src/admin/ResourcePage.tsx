@@ -386,7 +386,7 @@ export function ResourcePage({ type }: { type: string }) {
         {visibleItems.map((item) => (
           <article className="record" key={item.id}>
             <button className="linkish" type="button" onClick={() => { setError(null); setEditing(formFromItem(config.fields, item)) }}>
-              <h2>{itemLabel(item)}{item.year ? ` · ${String(item.year)}` : ''}{item.edition_year ? ` · Edição ano de ${String(item.edition_year)}` : ''}{type === 'clients' && item.location ? ` · ${String(item.location)}` : ''}</h2>
+              <h2>{itemLabel(item)}{item.year ? ` · ${String(item.year)}` : ''}{item.edition_year ? ` · Edição ano de ${String(item.edition_year)}` : ''}{type === 'clients' && item.location ? ` · ${String(item.location)}` : ''}{type === 'people' && item.role ? ` · ${String(item.role)}` : ''}</h2>
               <span className={item.active === false ? 'badge off' : 'badge'}>{item.active === false ? 'Oculto' : 'No ar'}</span>
             </button>
             <button className="btn btn-danger" type="button" onClick={() => void remove(item)}>Excluir</button>
