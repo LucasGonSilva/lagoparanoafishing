@@ -231,7 +231,9 @@ img.mono, img.mono-lg { object-fit: cover; }
 .stats a { text-decoration: none; border-top: 1px solid var(--line); padding: 0.9rem 0.2rem; }
 .stats strong { display: block; font-family: "Bebas Neue", sans-serif; font-size: 3rem; font-weight: 400; color: var(--gold-2); }
 .records { display: grid; }
-.record { display: grid; grid-template-columns: 1fr auto auto; gap: 0.8rem; align-items: center; border-top: 1px solid var(--line); padding: 0.85rem 0; }
+.record { display: grid; grid-template-columns: 1fr auto; gap: 0.8rem; align-items: center; border-top: 1px solid var(--line); padding: 0.85rem 0; }
+.record-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; }
+.record-edit { grid-column: 1 / -1; }
 .record button.linkish { background: none; border: 0; color: inherit; text-align: left; cursor: pointer; padding: 0; }
 .record h2 { font-size: 1.8rem; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }

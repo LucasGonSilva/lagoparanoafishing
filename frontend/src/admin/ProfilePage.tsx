@@ -14,6 +14,11 @@ export function ProfilePage() {
   const [newEmail, setNewEmail] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [newConfirmation, setNewConfirmation] = useState('')
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editName, setEditName] = useState('')
+  const [editEmail, setEditEmail] = useState('')
+  const [editPassword, setEditPassword] = useState('')
+  const [editConfirmation, setEditConfirmation] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [ok, setOk] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
@@ -90,6 +95,52 @@ export function ProfilePage() {
     }
   }
 
+  function startEdit(user: AdminUser) {
+    setEditingId(user.id)
+    setEditName(user.name)
+    setEditEmail(user.email)
+    setEditPassword('')
+    setEditConfirmation('')
+    setError(null)
+    setOk(null)
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setEditPassword('')
+    setEditConfirmation('')
+  }
+
+  async function saveUser(event: FormEvent) {
+    event.preventDefault()
+    if (editingId === null) {
+      return
+    }
+    setPending(true)
+    setError(null)
+    setOk(null)
+    try {
+      await api(`/api/admin/users/${editingId}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: editName,
+          email: editEmail,
+          password: editPassword || null,
+          password_confirmation: editConfirmation || null,
+        }),
+      })
+      setEditingId(null)
+      setEditPassword('')
+      setEditConfirmation('')
+      setOk('Cadastro atualizado.')
+      await load()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Não foi possível salvar o cadastro.')
+    } finally {
+      setPending(false)
+    }
+  }
+
   async function remove(user: AdminUser) {
     if (!window.confirm(`Remover o acesso de ${user.name}?`)) {
       return
@@ -108,7 +159,7 @@ export function ProfilePage() {
       <div className="admin-top">
         <div>
           <h1>Acesso</h1>
-          <p className="hint">Quem entra no painel. Troque a senha inicial aqui.</p>
+          <p className="hint">Quem entra no painel. Edite um cadastro ou troque a senha inicial aqui.</p>
         </div>
       </div>
       {error && <p className="alert">{error}</p>}
@@ -165,8 +216,36 @@ export function ProfilePage() {
               <h2>{user.name}</h2>
               <p className="meta">{user.email}{me?.id === user.id ? ' · você' : ''}</p>
             </div>
-            {me?.id !== user.id && (
-              <button className="btn btn-danger" type="button" onClick={() => void remove(user)}>Remover</button>
+            <div className="record-actions">
+              <button className="btn btn-ghost" type="button" onClick={() => startEdit(user)}>Editar</button>
+              {me?.id !== user.id && (
+                <button className="btn btn-danger" type="button" onClick={() => void remove(user)}>Remover</button>
+              )}
+            </div>
+            {editingId === user.id && (
+              <form className="stack record-edit" onSubmit={saveUser}>
+                <label className="field">
+                  <span>Nome</span>
+                  <input value={editName} onChange={(event) => setEditName(event.target.value)} required />
+                </label>
+                <label className="field">
+                  <span>E-mail</span>
+                  <input type="email" value={editEmail} onChange={(event) => setEditEmail(event.target.value)} required />
+                </label>
+                <label className="field">
+                  <span>Nova senha</span>
+                  <input type="password" autoComplete="new-password" value={editPassword} onChange={(event) => setEditPassword(event.target.value)} />
+                  <p className="hint">Deixe em branco para manter a senha atual.</p>
+                </label>
+                <label className="field">
+                  <span>Confirmar nova senha</span>
+                  <input type="password" autoComplete="new-password" value={editConfirmation} onChange={(event) => setEditConfirmation(event.target.value)} />
+                </label>
+                <div className="form-actions">
+                  <button className="btn btn-gold" type="submit" disabled={pending}>Salvar cadastro</button>
+                  <button className="btn btn-ghost" type="button" onClick={cancelEdit}>Cancelar</button>
+                </div>
+              </form>
             )}
           </article>
         ))}

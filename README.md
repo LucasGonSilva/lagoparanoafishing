@@ -39,6 +39,6 @@ docker compose exec mysql mysql -ulpf -plpf_secret lpf
 
 ## Hospedar na HostGator
 
-A publicação segue o mesmo caminho da Acagil, da Clinic Plus e do portfólio: HostGator compartilhada, Git e SSH. O site e o painel ficam juntos em `https://lpf.lsgontecnologia.com.br`, com document root em `site-lagoparanoafishing/backend/public`.
+A publicação segue o mesmo caminho da Acagil, da Clinic Plus e do portfólio: HostGator compartilhada, Git e SSH. O site e o painel ficam juntos em `https://lagoparanoafishing.lsgontecnologia.com.br`, com document root em `lagoparanoafishing/public`.
 
 O passo a passo da primeira subida está em [docs/HOSTGATOR.md](docs/HOSTGATOR.md). Cada melhoria depois disso segue [docs/ATUALIZAR.md](docs/ATUALIZAR.md).
