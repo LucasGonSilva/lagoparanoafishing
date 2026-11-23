@@ -167,7 +167,6 @@ export function SiteLayout() {
               {instagram && <li><a href={instagram} target="_blank" rel="noreferrer">Instagram</a></li>}
               {email && <li><a href={`mailto:${email}`}>{email}</a></li>}
               {!whatsapp && !instagram && !email && <li>Os canais saem no painel quando a administração publicar.</li>}
-              <li><Link to="/admin">Painel</Link></li>
             </ul>
           </div>
         </div>
