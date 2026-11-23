@@ -3,7 +3,7 @@ import { editionLabel, fishCountLabel, formatDay, formatMoney, lines, setting, u
 import { Monogram, Prose, useSite } from '../site'
 
 export function HomePage() {
-  const { settings, rules, events, species, posts, products, clients } = useSite()
+  const { settings, rules, events, species, posts, products, clients, links, partners } = useSite()
   const short = setting(settings, 'short_name', 'L.P.F')
   const pillars = lines(setting(settings, 'pillars'))
   const about = setting(settings, 'about').split(/\n\n+/)[0] ?? ''
@@ -201,6 +201,54 @@ export function HomePage() {
                     <p>{item.location}{item.fished_on ? ` · ${formatDay(item.fished_on)}` : ''}</p>
                   </span>
                   <span className="more">{fishCountLabel(item.fish_count)}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {links.length > 0 && (
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="wrap">
+            <div className="section-head">
+              <div>
+                <p className="section-index"><span>08</span> Para pescar</p>
+                <h2>Links importantes</h2>
+              </div>
+              <Link to="/links">Ver links</Link>
+            </div>
+            <div className="link-list">
+              {links.slice(0, 3).map((item) => (
+                <article key={item.id}>
+                  <h2>{item.title}</h2>
+                  <p className="meta">{item.details}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {partners.length > 0 && (
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="wrap">
+            <div className="section-head">
+              <div>
+                <p className="section-index"><span>09</span> Apoio</p>
+                <h2>Parcerias</h2>
+              </div>
+              <Link to="/parcerias">Ver parcerias</Link>
+            </div>
+            <div className="species-list">
+              {partners.slice(0, 3).map((item) => (
+                <Link key={item.id} to={`/parcerias/${item.slug}`}>
+                  <Monogram label={item.name} image={item.image_url} />
+                  <span>
+                    <h3>{item.name}</h3>
+                    <p>{item.summary}</p>
+                  </span>
+                  <span className="more">Ver</span>
                 </Link>
               ))}
             </div>

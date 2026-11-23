@@ -14,6 +14,7 @@ Route::get('/species/{slug}', [SiteController::class, 'species']);
 Route::get('/posts/{slug}', [SiteController::class, 'post']);
 Route::get('/products/{slug}', [SiteController::class, 'product']);
 Route::get('/clients/{slug}', [SiteController::class, 'client']);
+Route::get('/partners/{slug}', [SiteController::class, 'partner']);
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:8,1');
 
@@ -30,7 +31,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::put('/settings', [SettingController::class, 'update']);
     Route::post('/uploads', [UploadController::class, 'store']);
 
-    Route::prefix('content')->where(['type' => 'rules|events|species|posts|gallery|faqs|products|clients'])->group(function () {
+    Route::prefix('content')->where(['type' => 'rules|events|species|posts|gallery|faqs|products|clients|links|partners|people'])->group(function () {
         Route::get('/{type}', [ContentController::class, 'index']);
         Route::post('/{type}', [ContentController::class, 'store']);
         Route::put('/{type}/{id}', [ContentController::class, 'update'])->whereNumber('id');

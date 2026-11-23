@@ -8,10 +8,13 @@ use App\Models\ClubRule;
 use App\Models\Faq;
 use App\Models\FishingEvent;
 use App\Models\GalleryItem;
+use App\Models\GroupMember;
+use App\Models\Partner;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Species;
+use App\Models\UsefulLink;
 
 class SiteController extends Controller
 {
@@ -27,6 +30,9 @@ class SiteController extends Controller
             'gallery' => $this->collect(GalleryItem::class, [['position', 'asc'], ['id', 'asc']]),
             'clients' => $this->collect(ClientTrip::class, [['raw', 'fished_on IS NULL'], ['fished_on', 'desc'], ['id', 'desc']]),
             'faqs' => $this->collect(Faq::class, [['position', 'asc'], ['id', 'asc']]),
+            'links' => $this->collect(UsefulLink::class, [['position', 'asc'], ['id', 'asc']]),
+            'partners' => $this->collect(Partner::class, [['position', 'asc'], ['id', 'asc']]),
+            'people' => $this->collect(GroupMember::class, [['position', 'asc'], ['id', 'asc']]),
         ]);
     }
 
@@ -53,6 +59,11 @@ class SiteController extends Controller
     public function client(string $slug)
     {
         return $this->one(ClientTrip::class, $slug);
+    }
+
+    public function partner(string $slug)
+    {
+        return $this->one(Partner::class, $slug);
     }
 
     private function one(string $model, string $slug)

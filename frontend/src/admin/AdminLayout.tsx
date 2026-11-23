@@ -12,6 +12,9 @@ const links = [
   ['/admin/especies', 'Espécies'],
   ['/admin/galeria', 'Galeria'],
   ['/admin/noticias', 'Notícias'],
+  ['/admin/links', 'Links'],
+  ['/admin/parcerias', 'Parcerias'],
+  ['/admin/pessoas', 'Pessoas'],
   ['/admin/perguntas', 'Perguntas'],
   ['/admin/acesso', 'Acesso'],
 ]
