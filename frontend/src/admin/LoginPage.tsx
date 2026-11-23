@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api, setToken } from '../api'
+import { PasswordInput } from './PasswordInput'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -40,7 +41,7 @@ export function LoginPage() {
         </label>
         <label className="field">
           <span>Senha</span>
-          <input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+          <PasswordInput autoComplete="current-password" value={password} onChange={setPassword} required />
         </label>
         <button className="btn btn-gold" type="submit" disabled={pending}>{pending ? 'Entrando…' : 'Entrar'}</button>
         <Link to="/">Voltar ao site</Link>
