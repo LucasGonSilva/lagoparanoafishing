@@ -119,6 +119,44 @@ class AuthController extends Controller
         ], 201);
     }
 
+    public function updateUser(Request $request, int $id)
+    {
+        $user = User::query()->findOrFail($id);
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:180', Rule::unique('users', 'email')->ignore($user->id)],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $emailChanged = $data['email'] !== $user->email;
+        $passwordChanged = $request->filled('password');
+
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+
+        if ($passwordChanged) {
+            $user->password = $data['password'];
+        }
+
+        $user->save();
+
+        if ($emailChanged || $passwordChanged) {
+            $tokens = $user->tokens();
+            $current = $request->user()->currentAccessToken();
+
+            if ($request->user()->id === $user->id && $current) {
+                $tokens->whereKeyNot($current->id);
+            }
+
+            $tokens->delete();
+        }
+
+        return response()->json([
+            'data' => $this->profile($user),
+        ]);
+    }
+
     public function destroy(Request $request, int $id)
     {
         if ($request->user()->id === $id) {

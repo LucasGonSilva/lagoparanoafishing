@@ -7,9 +7,9 @@ Siga esta ordem. Produção puxa a branch **`main`**.
 | Ubuntu (`/var/www/html/site-lagoparanoafishing`) | código, Git, Docker, `rsync` |
 | SSH (`lsgont28@lsgontecnologia.com.br`) | `git pull` e comandos do Laravel |
 
-Site: https://lpf.lsgontecnologia.com.br  
-Clone no servidor: `/home1/lsgont28/site-lagoparanoafishing`  
-Document root: `site-lagoparanoafishing/backend/public`
+Site: https://lagoparanoafishing.lsgontecnologia.com.br  
+Clone no servidor: `/home1/lsgont28/lagoparanoafishing`  
+Document root: `lagoparanoafishing/public` (link para `backend/public`)
 
 ---
 
@@ -24,7 +24,7 @@ Abra http://localhost:8090 e o painel em http://localhost:8090/admin/login.
 
 ---
 
-## 2. Commit e enviar para o GitHub
+## 2. Commit e enviar a `main` para o GitHub
 
 Não commite `.env`, `vendor`, `node_modules`, `public/index.html`, `public/assets` nem `public/logo.png`.
 
@@ -33,10 +33,13 @@ cd /var/www/html/site-lagoparanoafishing
 git status
 git add -A
 git commit -m "Descreva o porquê da mudança"
+git checkout main
+git merge --ff-only -
 git push origin main
+git checkout -
 ```
 
-O servidor não lê outra branch. Sem `push` na `main`, o `git pull` de produção não traz nada.
+O servidor só atualiza com a `main`. Um push da branch de trabalho, sozinho, não muda o site.
 
 ---
 
@@ -47,7 +50,8 @@ ssh lsgont28@lsgontecnologia.com.br
 ```
 
 ```bash
-cd ~/site-lagoparanoafishing
+cd ~/lagoparanoafishing
+git checkout main
 git checkout -- backend/public/.htaccess
 git pull origin main
 cd backend
@@ -63,7 +67,7 @@ Sempre `ea-php84`. Não rode `db:seed` de novo: a primeira semeadura já criou o
 Confira:
 
 ```text
-https://lpf.lsgontecnologia.com.br/up
+https://lagoparanoafishing.lsgontecnologia.com.br/up
 ```
 
 ---
@@ -75,8 +79,8 @@ Não rode `npm` na HostGator. Compile no Ubuntu e envie o pacote.
 ```bash
 cd /var/www/html/site-lagoparanoafishing
 sh scripts/build-hostgator.sh
-rsync -avz --delete backend/public/assets/ lsgont28@lsgontecnologia.com.br:~/site-lagoparanoafishing/backend/public/assets/
-rsync -avz backend/public/index.html backend/public/logo.png lsgont28@lsgontecnologia.com.br:~/site-lagoparanoafishing/backend/public/
+rsync -avz --delete backend/public/assets/ lsgont28@lsgontecnologia.com.br:~/lagoparanoafishing/backend/public/assets/
+rsync -avz backend/public/index.html backend/public/logo.png lsgont28@lsgontecnologia.com.br:~/lagoparanoafishing/backend/public/
 ```
 
 Recarregue o site. Se o painel ou a home ainda mostrar a versão antiga, force o recarregamento.
