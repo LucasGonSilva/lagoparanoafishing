@@ -18,12 +18,26 @@ export const supportKinds = [
 
 export type SupportKind = (typeof supportKinds)[number]['value']
 
+export const linkKinds = [
+  { value: 'site', label: 'Site' },
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'landing', label: 'Landing page' },
+  { value: 'facebook', label: 'Facebook' },
+  { value: 'youtube', label: 'YouTube' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'outro', label: 'Outro' },
+] as const
+
+export type LinkKind = (typeof linkKinds)[number]['value']
+
 export type EventSponsor = {
   name: string
   kind: SupportKind
   image_path: string | null
   image_url: string | null
   url: string | null
+  url_kind: LinkKind
   note: string | null
 }
 

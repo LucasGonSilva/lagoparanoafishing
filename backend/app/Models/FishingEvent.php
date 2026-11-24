@@ -19,6 +19,17 @@ class FishingEvent extends Model
         'realizacao',
     ];
 
+    public const LINK_KINDS = [
+        'site',
+        'instagram',
+        'landing',
+        'facebook',
+        'youtube',
+        'whatsapp',
+        'tiktok',
+        'outro',
+    ];
+
     protected $table = 'events';
 
     protected $fillable = [
@@ -109,6 +120,10 @@ class FishingEvent extends Model
             $path = $sponsor['image_path'] ?? null;
             $path = is_string($path) && $path !== '' ? $path : null;
             $url = $sponsor['url'] ?? null;
+            $urlKind = $sponsor['url_kind'] ?? 'site';
+            if (! is_string($urlKind) || ! in_array($urlKind, self::LINK_KINDS, true)) {
+                $urlKind = 'site';
+            }
             $note = $sponsor['note'] ?? null;
             $kind = $sponsor['kind'] ?? 'patrocinadores';
             if (! is_string($kind) || ! in_array($kind, self::SUPPORT_KINDS, true)) {
@@ -120,6 +135,7 @@ class FishingEvent extends Model
                 'image_path' => $path,
                 'image_url' => Media::url($path),
                 'url' => is_string($url) && $url !== '' ? $url : null,
+                'url_kind' => $urlKind,
                 'note' => is_string($note) && trim($note) !== '' ? trim($note) : null,
             ];
         }

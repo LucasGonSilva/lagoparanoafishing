@@ -119,6 +119,7 @@ class ContentController extends Controller
                 'sponsors.*.kind' => ['nullable', Rule::in(FishingEvent::SUPPORT_KINDS)],
                 'sponsors.*.image_path' => $image,
                 'sponsors.*.url' => ['nullable', 'url', 'max:255'],
+                'sponsors.*.url_kind' => ['nullable', Rule::in(FishingEvent::LINK_KINDS)],
                 'sponsors.*.note' => ['nullable', 'string', 'max:400'],
                 'active' => ['sometimes', 'boolean'],
             ],
@@ -300,9 +301,19 @@ class ContentController extends Controller
                 $scheme = parse_url($url, PHP_URL_SCHEME);
                 if (! filter_var($url, FILTER_VALIDATE_URL) || ! in_array($scheme, ['http', 'https'], true)) {
                     throw ValidationException::withMessages([
-                        "sponsors.$index.url" => 'O site do patrocinador precisa começar com http:// ou https://.',
+                        "sponsors.$index.url" => 'O endereço precisa começar com http:// ou https://.',
                     ]);
                 }
+            }
+
+            $urlKind = $sponsor['url_kind'] ?? 'site';
+            if (! is_string($urlKind) || $urlKind === '') {
+                $urlKind = 'site';
+            }
+            if (! in_array($urlKind, FishingEvent::LINK_KINDS, true)) {
+                throw ValidationException::withMessages([
+                    "sponsors.$index.url_kind" => 'Escolha o que é o endereço: site, Instagram, landing page ou outro.',
+                ]);
             }
 
             $note = trim((string) ($sponsor['note'] ?? ''));
@@ -311,6 +322,7 @@ class ContentController extends Controller
                 'kind' => $kind,
                 'image_path' => $path,
                 'url' => $url,
+                'url_kind' => $urlKind,
                 'note' => $note === '' ? null : $note,
             ];
         }

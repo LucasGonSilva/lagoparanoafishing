@@ -55,7 +55,7 @@ export const resources: Record<string, ResourceConfig> = {
       },
       { kind: 'image', name: 'image_path', label: 'Imagem', hint: 'Foto principal. No site, o clique amplia.' },
       { kind: 'photos', name: 'photos', label: 'Mais fotos', hint: 'Cada foto abre ampliada no site. JPG, PNG ou WebP.' },
-      { kind: 'sponsors', name: 'sponsors', label: 'Apoio', hint: 'Escolha o tipo de cada um. No site, o evento separa Patrocinadores, Colaboradores, Organizações, Apoiadores e Realização. A ordem dentro do mesmo tipo é a ordem daqui.' },
+      { kind: 'sponsors', name: 'sponsors', label: 'Apoio', hint: 'Escolha o tipo de cada um e, se houver endereço, o que ele é: site, Instagram, landing page ou outro. No site, o evento separa por tipo.' },
       visible,
     ],
   },

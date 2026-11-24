@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { api } from '../api'
 import { toInputDateTime } from '../format'
-import { supportKinds, type SupportKind } from '../types'
+import { linkKinds, supportKinds, type LinkKind, type SupportKind } from '../types'
 import { itemLabel, resources, type Field } from './resources'
 
 type Item = Record<string, unknown> & { id: number; active?: boolean; image_url?: string | null }
@@ -12,11 +12,16 @@ type SponsorDraft = {
   image_path: string
   image_url: string
   url: string
+  url_kind: LinkKind
   note: string
 }
 
 function blankSponsor(): SponsorDraft {
-  return { name: '', kind: 'patrocinadores', image_path: '', image_url: '', url: '', note: '' }
+  return { name: '', kind: 'patrocinadores', image_path: '', image_url: '', url: '', url_kind: 'site', note: '' }
+}
+
+function linkKind(value: unknown): LinkKind {
+  return linkKinds.some((item) => item.value === value) ? value as LinkKind : 'site'
 }
 
 function supportKind(value: unknown): SupportKind {
@@ -38,6 +43,7 @@ function sponsorDrafts(value: unknown): SponsorDraft[] {
       image_path: typeof row.image_path === 'string' ? row.image_path : '',
       image_url: typeof row.image_url === 'string' ? row.image_url : '',
       url: typeof row.url === 'string' ? row.url : '',
+      url_kind: linkKind(row.url_kind),
       note: typeof row.note === 'string' ? row.note : '',
     }]
   })
@@ -126,6 +132,7 @@ function payloadFrom(fields: Field[], form: Record<string, unknown>): Record<str
           kind: item.kind,
           image_path: item.image_path || null,
           url: url || null,
+          url_kind: item.url_kind,
           note: note || null,
         }]
       })
@@ -435,7 +442,22 @@ export function ResourcePage({ type }: { type: string }) {
                         />
                       </label>
                       <label className="field">
-                        <span>Site</span>
+                        <span>O que é o endereço</span>
+                        <select
+                          value={sponsor.url_kind}
+                          onChange={(event) => {
+                            const next = [...sponsors]
+                            next[index] = { ...sponsor, url_kind: linkKind(event.target.value) }
+                            patch(next)
+                          }}
+                        >
+                          {linkKinds.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="field">
+                        <span>Endereço</span>
                         <input
                           type="url"
                           placeholder="https://"
@@ -446,6 +468,7 @@ export function ResourcePage({ type }: { type: string }) {
                             patch(next)
                           }}
                         />
+                        <p className="hint">Pode ser site, Instagram, landing page ou outro. O nome escolhido aparece no evento.</p>
                       </label>
                       <div className="field">
                         <span>Foto</span>
