@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { formatWhen, safeUrl, statusLabel } from '../format'
 import { PageHero, Prose, useSite } from '../site'
-import { supportKinds, type EventSponsor } from '../types'
+import { linkKinds, supportKinds, type EventSponsor } from '../types'
 
 function SponsorCard({ sponsor, onPhoto }: { sponsor: EventSponsor; onPhoto: (photo: { url: string; caption: string }) => void }) {
-  const site = safeUrl(sponsor.url)
+  const href = safeUrl(sponsor.url)
+  const linkLabel = linkKinds.find((item) => item.value === sponsor.url_kind)?.label ?? 'Site'
   return (
     <article>
       {sponsor.image_url && (
@@ -15,7 +16,7 @@ function SponsorCard({ sponsor, onPhoto }: { sponsor: EventSponsor; onPhoto: (ph
       )}
       <strong>{sponsor.name}</strong>
       {sponsor.note && <p>{sponsor.note}</p>}
-      {site && <a href={site} target="_blank" rel="noreferrer">Site</a>}
+      {href && <a href={href} target="_blank" rel="noreferrer">{linkLabel}</a>}
     </article>
   )
 }
