@@ -169,9 +169,19 @@ img.mono, img.mono-lg { object-fit: cover; }
 
 .detail { display: grid; grid-template-columns: 280px 1fr; gap: 2.2rem; align-items: start; padding-bottom: 4rem; }
 .detail img, .story-cover { width: 100%; border-radius: 50%; aspect-ratio: 1; object-fit: cover; }
-.event-photos { display: flex; flex-wrap: wrap; gap: 0.7rem; }
-.event-photos .zoom { display: block; width: min(220px, 100%); padding: 0; border: 0; background: transparent; cursor: zoom-in; line-height: 0; }
-.detail .event-photos .zoom img { display: block; width: 100%; height: auto; max-width: 100%; max-height: none; aspect-ratio: auto; border-radius: 0; object-fit: contain; }
+.event-sheet { padding-bottom: 3.5rem; }
+.event-sheet .detail { padding-bottom: 0; }
+.event-photos { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.8rem; margin-top: 2rem; }
+.event-photos .zoom { display: block; width: min(220px, 100%); padding: 0; border: 0; background: #100e0b; cursor: zoom-in; line-height: 0; }
+.event-photos .zoom img { display: block; width: 100%; height: auto; max-width: 100%; max-height: none; aspect-ratio: auto; border-radius: 0; object-fit: contain; }
+.event-support { margin-top: 2.6rem; }
+.event-sponsors { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.2rem; margin-top: 0.8rem; }
+.event-sponsors article { border-top: 1px solid var(--line); padding-top: 0.85rem; }
+.event-sponsors .zoom { display: block; width: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; line-height: 0; }
+.event-sponsors img { display: block; width: 100%; height: 140px; object-fit: contain; background: #100e0b; border-radius: 0; aspect-ratio: auto; }
+.event-sponsors strong { display: block; margin-top: 0.55rem; font-family: "Bebas Neue", sans-serif; font-size: 1.8rem; font-weight: 400; letter-spacing: 0.04em; }
+.event-sponsors p { color: var(--muted); font-weight: 300; line-height: 1.5; margin-top: 0.2rem; }
+.event-sponsors a { color: var(--gold-2); font-size: 0.85rem; }
 .crew { display: grid; gap: 1.2rem; }
 .crew h2 { font-size: clamp(2.8rem, 5vw, 4rem); }
 .crew-role { border-top: 1px solid var(--line); padding-top: 0.9rem; }
@@ -225,6 +235,10 @@ img.mono, img.mono-lg { object-fit: cover; }
 .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.7rem; }
 .media-grid figure { margin: 0; display: grid; gap: 0.4rem; }
 .media-grid img, .media-grid video { width: 100%; aspect-ratio: 1; object-fit: cover; background: #000; }
+.sponsor-editor { display: grid; gap: 0.8rem; }
+.sponsor-card { display: grid; gap: 0.7rem; border: 1px solid var(--line); padding: 0.9rem; }
+.sponsor-card .preview { width: 96px; height: 96px; object-fit: contain; background: #000; }
+.sponsor-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .video-link { display: flex; gap: 0.5rem; align-items: center; }
 .video-link input { flex: 1; }
 .trip-facts { grid-template-columns: repeat(4, 1fr); margin-bottom: 1.6rem; }
