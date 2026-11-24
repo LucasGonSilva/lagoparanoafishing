@@ -148,31 +148,37 @@ export function SiteLayout() {
         <Outlet />
       </main>
       <footer className="site-footer">
-        <div className="wrap footer-grid">
-          <div>
-            <strong>{short}</strong>
-            <p>{group}</p>
-            <p className="fine">
-              Criado por {setting(data.settings, 'founder_name', 'Lucas Rafael Dutra Silva')}, o {setting(data.settings, 'founder_nickname', 'Galegão da Pesca')}, em {setting(data.settings, 'founded_date_label', '23 de novembro de 2022')}, às {setting(data.settings, 'founded_time_label', '15:02')}.
-            </p>
+        <div className="wrap">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <img src="/logo.png" alt="" />
+              <div>
+                <strong>{short}</strong>
+                <p>{group}</p>
+                <p className="fine">
+                  Criado por {setting(data.settings, 'founder_name', 'Lucas Rafael Dutra Silva')}, o {setting(data.settings, 'founder_nickname', 'Galegão da Pesca')}, em {setting(data.settings, 'founded_date_label', '23 de novembro de 2022')}, às {setting(data.settings, 'founded_time_label', '15:02')}.
+                </p>
+              </div>
+            </div>
+            <div>
+              <p className="footer-label">No site</p>
+              <ul>
+                {links.slice(1).map(([to, label]) => (
+                  <li key={to}><Link to={to}>{label}</Link></li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="footer-label">Contato</p>
+              <ul>
+                {whatsapp && <li><a href={whatsapp} target="_blank" rel="noreferrer">Entrar no grupo</a></li>}
+                {instagram && <li><a href={instagram} target="_blank" rel="noreferrer">Instagram</a></li>}
+                {email && <li><a href={`mailto:${email}`}>{email}</a></li>}
+                {!whatsapp && !instagram && !email && <li>Os canais saem no painel quando a administração publicar.</li>}
+              </ul>
+            </div>
           </div>
-          <div>
-            <p>No site</p>
-            <ul>
-              {links.slice(1).map(([to, label]) => (
-                <li key={to}><Link to={to}>{label}</Link></li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p>Contato</p>
-            <ul>
-              {whatsapp && <li><a href={whatsapp} target="_blank" rel="noreferrer">Entrar no grupo</a></li>}
-              {instagram && <li><a href={instagram} target="_blank" rel="noreferrer">Instagram</a></li>}
-              {email && <li><a href={`mailto:${email}`}>{email}</a></li>}
-              {!whatsapp && !instagram && !email && <li>Os canais saem no painel quando a administração publicar.</li>}
-            </ul>
-          </div>
+          <p className="footer-sign">Site desenvolvido por <span>Lucas Silva</span></p>
         </div>
       </footer>
     </SiteContext.Provider>
