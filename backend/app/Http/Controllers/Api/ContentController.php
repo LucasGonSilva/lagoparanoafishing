@@ -116,6 +116,7 @@ class ContentController extends Controller
                 'photos.*' => ['string', 'max:255', 'regex:/^midia\/[A-Za-z0-9][A-Za-z0-9._-]*$/'],
                 'sponsors' => ['nullable', 'array', 'max:20'],
                 'sponsors.*.name' => ['required', 'string', 'max:160'],
+                'sponsors.*.kind' => ['nullable', Rule::in(FishingEvent::SUPPORT_KINDS)],
                 'sponsors.*.image_path' => $image,
                 'sponsors.*.url' => ['nullable', 'url', 'max:255'],
                 'sponsors.*.note' => ['nullable', 'string', 'max:400'],
@@ -269,7 +270,17 @@ class ContentController extends Controller
             $name = trim((string) ($sponsor['name'] ?? ''));
             if ($name === '') {
                 throw ValidationException::withMessages([
-                    "sponsors.$index.name" => 'Informe o nome do patrocinador.',
+                    "sponsors.$index.name" => 'Informe o nome.',
+                ]);
+            }
+
+            $kind = $sponsor['kind'] ?? 'patrocinadores';
+            if (! is_string($kind) || $kind === '') {
+                $kind = 'patrocinadores';
+            }
+            if (! in_array($kind, FishingEvent::SUPPORT_KINDS, true)) {
+                throw ValidationException::withMessages([
+                    "sponsors.$index.kind" => 'Escolha o tipo: Patrocinadores, Colaboradores, Organizações, Apoiadores ou Realização.',
                 ]);
             }
 
@@ -297,6 +308,7 @@ class ContentController extends Controller
             $note = trim((string) ($sponsor['note'] ?? ''));
             $clean[] = [
                 'name' => $name,
+                'kind' => $kind,
                 'image_path' => $path,
                 'url' => $url,
                 'note' => $note === '' ? null : $note,

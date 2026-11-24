@@ -2,6 +2,23 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { formatWhen, safeUrl, statusLabel } from '../format'
 import { PageHero, Prose, useSite } from '../site'
+import { supportKinds, type EventSponsor } from '../types'
+
+function SponsorCard({ sponsor, onPhoto }: { sponsor: EventSponsor; onPhoto: (photo: { url: string; caption: string }) => void }) {
+  const site = safeUrl(sponsor.url)
+  return (
+    <article>
+      {sponsor.image_url && (
+        <button className="zoom" type="button" aria-label={`Ampliar foto de ${sponsor.name}`} onClick={() => onPhoto({ url: sponsor.image_url as string, caption: sponsor.name })}>
+          <img src={sponsor.image_url} alt={sponsor.name} />
+        </button>
+      )}
+      <strong>{sponsor.name}</strong>
+      {sponsor.note && <p>{sponsor.note}</p>}
+      {site && <a href={site} target="_blank" rel="noreferrer">Site</a>}
+    </article>
+  )
+}
 
 export function EventPage() {
   const { slug } = useParams()
@@ -65,24 +82,23 @@ export function EventPage() {
         )}
         {sponsors.length > 0 && (
           <div className="wrap event-support">
-            <p className="section-index"><span>Apoio</span> Patrocinadores</p>
-            <div className="event-sponsors">
-              {sponsors.map((sponsor, index) => {
-                const site = safeUrl(sponsor.url)
-                return (
-                  <article key={`${sponsor.name}-${index}`}>
-                    {sponsor.image_url && (
-                      <button className="zoom" type="button" aria-label={`Ampliar foto de ${sponsor.name}`} onClick={() => setPhoto({ url: sponsor.image_url as string, caption: sponsor.name })}>
-                        <img src={sponsor.image_url} alt={sponsor.name} />
-                      </button>
-                    )}
-                    <strong>{sponsor.name}</strong>
-                    {sponsor.note && <p>{sponsor.note}</p>}
-                    {site && <a href={site} target="_blank" rel="noreferrer">Site</a>}
-                  </article>
-                )
-              })}
-            </div>
+            <p className="section-index"><span>Apoio</span></p>
+            {supportKinds.flatMap((group) => {
+              const people = sponsors.filter((sponsor) => (sponsor.kind || 'patrocinadores') === group.value)
+              if (people.length === 0) {
+                return []
+              }
+              return [(
+                <section className="event-support-group" key={group.value}>
+                  <h3>{group.label}</h3>
+                  <div className="event-sponsors">
+                    {people.map((sponsor, index) => (
+                      <SponsorCard key={`${group.value}-${sponsor.name}-${index}`} sponsor={sponsor} onPhoto={setPhoto} />
+                    ))}
+                  </div>
+                </section>
+              )]
+            })}
           </div>
         )}
       </article>

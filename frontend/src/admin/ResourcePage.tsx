@@ -1,16 +1,26 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { api } from '../api'
 import { toInputDateTime } from '../format'
+import { supportKinds, type SupportKind } from '../types'
 import { itemLabel, resources, type Field } from './resources'
 
 type Item = Record<string, unknown> & { id: number; active?: boolean; image_url?: string | null }
 
 type SponsorDraft = {
   name: string
+  kind: SupportKind
   image_path: string
   image_url: string
   url: string
   note: string
+}
+
+function blankSponsor(): SponsorDraft {
+  return { name: '', kind: 'patrocinadores', image_path: '', image_url: '', url: '', note: '' }
+}
+
+function supportKind(value: unknown): SupportKind {
+  return supportKinds.some((item) => item.value === value) ? value as SupportKind : 'patrocinadores'
 }
 
 function sponsorDrafts(value: unknown): SponsorDraft[] {
@@ -24,6 +34,7 @@ function sponsorDrafts(value: unknown): SponsorDraft[] {
     const row = item as Record<string, unknown>
     return [{
       name: typeof row.name === 'string' ? row.name : '',
+      kind: supportKind(row.kind),
       image_path: typeof row.image_path === 'string' ? row.image_path : '',
       image_url: typeof row.image_url === 'string' ? row.image_url : '',
       url: typeof row.url === 'string' ? row.url : '',
@@ -112,6 +123,7 @@ function payloadFrom(fields: Field[], form: Record<string, unknown>): Record<str
         }
         return [{
           name,
+          kind: item.kind,
           image_path: item.image_path || null,
           url: url || null,
           note: note || null,
@@ -222,7 +234,7 @@ export function ResourcePage({ type }: { type: string }) {
         if (sponsorIndex !== undefined) {
           const sponsors = sponsorDrafts(current.sponsors)
           sponsors[sponsorIndex] = {
-            ...(sponsors[sponsorIndex] ?? { name: '', image_path: '', image_url: '', url: '', note: '' }),
+            ...(sponsors[sponsorIndex] ?? blankSponsor()),
             image_path: result.path,
             image_url: result.url,
           }
@@ -386,6 +398,21 @@ export function ResourcePage({ type }: { type: string }) {
                   {sponsors.map((sponsor, index) => (
                     <div className="sponsor-card" key={index}>
                       <label className="field">
+                        <span>Tipo</span>
+                        <select
+                          value={sponsor.kind}
+                          onChange={(event) => {
+                            const next = [...sponsors]
+                            next[index] = { ...sponsor, kind: supportKind(event.target.value) }
+                            patch(next)
+                          }}
+                        >
+                          {supportKinds.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="field">
                         <span>Nome</span>
                         <input
                           value={sponsor.name}
@@ -489,7 +516,7 @@ export function ResourcePage({ type }: { type: string }) {
                 <button
                   className="btn btn-ghost"
                   type="button"
-                  onClick={() => patch([...sponsors, { name: '', image_path: '', image_url: '', url: '', note: '' }])}
+                  onClick={() => patch([...sponsors, blankSponsor()])}
                 >
                   Adicionar patrocinador
                 </button>
@@ -566,7 +593,7 @@ export function ResourcePage({ type }: { type: string }) {
         {visibleItems.map((item) => (
           <article className="record" key={item.id}>
             <button className="linkish" type="button" onClick={() => { setError(null); setEditing(formFromItem(config.fields, item)) }}>
-              <h2>{itemLabel(item)}{item.year ? ` · ${String(item.year)}` : ''}{item.edition_year ? ` · Edição ano de ${String(item.edition_year)}` : ''}{type === 'clients' && item.location ? ` · ${String(item.location)}` : ''}{type === 'people' && item.role ? ` · ${String(item.role)}` : ''}{type === 'events' && Array.isArray(item.sponsors) && item.sponsors.length > 0 ? ` · ${item.sponsors.length} ${item.sponsors.length === 1 ? 'patrocinador' : 'patrocinadores'}` : ''}</h2>
+              <h2>{itemLabel(item)}{item.year ? ` · ${String(item.year)}` : ''}{item.edition_year ? ` · Edição ano de ${String(item.edition_year)}` : ''}{type === 'clients' && item.location ? ` · ${String(item.location)}` : ''}{type === 'people' && item.role ? ` · ${String(item.role)}` : ''}{type === 'events' && Array.isArray(item.sponsors) && item.sponsors.length > 0 ? ` · ${item.sponsors.length} no apoio` : ''}</h2>
               <span className={item.active === false ? 'badge off' : 'badge'}>{item.active === false ? 'Oculto' : 'No ar'}</span>
             </button>
             <button className="btn btn-danger" type="button" onClick={() => void remove(item)}>Excluir</button>

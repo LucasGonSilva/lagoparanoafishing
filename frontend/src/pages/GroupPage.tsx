@@ -20,6 +20,8 @@ export function GroupPage() {
   const { settings, people } = useSite()
   const pillars = lines(setting(settings, 'pillars'))
   const crew = byRole(people ?? [])
+  const rawMembers = setting(settings, 'member_count').trim()
+  const members = /^\d+$/.test(rawMembers) ? Number(rawMembers) : 0
 
   return (
     <>
@@ -35,6 +37,12 @@ export function GroupPage() {
             <p>{setting(settings, 'founder_name')}</p>
             <strong>{setting(settings, 'founded_time_label', '15:02')}</strong>
             <span>{setting(settings, 'founder_nickname')} · {setting(settings, 'founded_date_label')}</span>
+            {members > 0 && (
+              <p className="members">
+                <strong>{members.toLocaleString('pt-BR')}</strong>
+                <span>{members === 1 ? 'integrante no WhatsApp' : 'integrantes no WhatsApp'}</span>
+              </p>
+            )}
           </div>
         </div>
       </section>
