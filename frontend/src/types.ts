@@ -8,8 +8,19 @@ export type Rule = {
   active: boolean
 }
 
+export const supportKinds = [
+  { value: 'patrocinadores', label: 'Patrocinadores' },
+  { value: 'colaboradores', label: 'Colaboradores' },
+  { value: 'organizacoes', label: 'Organizações' },
+  { value: 'apoiadores', label: 'Apoiadores' },
+  { value: 'realizacao', label: 'Realização' },
+] as const
+
+export type SupportKind = (typeof supportKinds)[number]['value']
+
 export type EventSponsor = {
   name: string
+  kind: SupportKind
   image_path: string | null
   image_url: string | null
   url: string | null
