@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { api } from '../api'
 import type { Settings } from '../types'
 
-const fields: { name: string; label: string; kind?: 'textarea'; hint?: string }[] = [
+const fields: { name: string; label: string; kind?: 'textarea' | 'number'; hint?: string }[] = [
   { name: 'group_name', label: 'Nome do grupo' },
   { name: 'short_name', label: 'Sigla' },
   { name: 'tagline', label: 'Chamada' },
@@ -19,6 +19,7 @@ const fields: { name: string; label: string; kind?: 'textarea'; hint?: string }[
   { name: 'manifesto', label: 'Frase de fechamento', kind: 'textarea' },
   { name: 'join_text', label: 'Texto de participação', kind: 'textarea' },
   { name: 'join_note', label: 'Aviso quando não houver link', kind: 'textarea' },
+  { name: 'member_count', label: 'Integrantes no WhatsApp', kind: 'number', hint: 'Quantidade atual do grupo. Deixe em branco para não mostrar em O grupo.' },
   { name: 'whatsapp_url', label: 'Link do grupo', hint: 'Endereço completo, começando com https://' },
   { name: 'instagram_url', label: 'Instagram', hint: 'Endereço completo, começando com https://' },
   { name: 'contact_email', label: 'E-mail de contato' },
@@ -65,7 +66,7 @@ export function SettingsPage() {
       <div className="admin-top">
         <div>
           <h1>Textos</h1>
-          <p className="hint">Nome, história, fundador, frase do grupo e os links de contato.</p>
+          <p className="hint">Nome, história, fundador, quantidade de integrantes, frase do grupo e os links de contato.</p>
         </div>
         <button className="btn btn-gold" type="submit" disabled={pending}>{pending ? 'Salvando…' : 'Salvar'}</button>
       </div>
@@ -81,6 +82,9 @@ export function SettingsPage() {
             />
           ) : (
             <input
+              type={field.kind === 'number' ? 'number' : 'text'}
+              min={field.kind === 'number' ? 1 : undefined}
+              step={field.kind === 'number' ? 1 : undefined}
               value={form[field.name] ?? ''}
               onChange={(event) => setForm({ ...form, [field.name]: event.target.value })}
             />

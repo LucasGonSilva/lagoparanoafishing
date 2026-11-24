@@ -34,6 +34,7 @@ class SettingController extends Controller
             'manifesto' => ['nullable', 'string', 'max:2000'],
             'join_text' => ['nullable', 'string', 'max:5000'],
             'join_note' => ['nullable', 'string', 'max:1000'],
+            'member_count' => ['nullable', 'integer', 'min:1', 'max:99999'],
             'whatsapp_url' => ['nullable', 'url', 'max:255'],
             'instagram_url' => ['nullable', 'url', 'max:255'],
             'contact_email' => ['nullable', 'email', 'max:180'],

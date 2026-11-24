@@ -11,6 +11,14 @@ class FishingEvent extends Model
 {
     use HasSlug;
 
+    public const SUPPORT_KINDS = [
+        'patrocinadores',
+        'colaboradores',
+        'organizacoes',
+        'apoiadores',
+        'realizacao',
+    ];
+
     protected $table = 'events';
 
     protected $fillable = [
@@ -102,8 +110,13 @@ class FishingEvent extends Model
             $path = is_string($path) && $path !== '' ? $path : null;
             $url = $sponsor['url'] ?? null;
             $note = $sponsor['note'] ?? null;
+            $kind = $sponsor['kind'] ?? 'patrocinadores';
+            if (! is_string($kind) || ! in_array($kind, self::SUPPORT_KINDS, true)) {
+                $kind = 'patrocinadores';
+            }
             $sponsors[] = [
                 'name' => $name,
+                'kind' => $kind,
                 'image_path' => $path,
                 'image_url' => Media::url($path),
                 'url' => is_string($url) && $url !== '' ? $url : null,
