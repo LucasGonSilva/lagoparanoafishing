@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { formatWhen, statusLabel } from '../format'
+import { formatWhen, safeUrl, statusLabel } from '../format'
 import { PageHero, Prose, useSite } from '../site'
 
 export function EventPage() {
   const { slug } = useParams()
   const { events } = useSite()
   const event = events.find((item) => item.slug === slug)
-  const [photo, setPhoto] = useState<string | null>(null)
+  const [photo, setPhoto] = useState<{ url: string; caption: string } | null>(null)
 
   useEffect(() => {
     if (!photo) {
@@ -32,6 +32,7 @@ export function EventPage() {
     ...(event.image_url ? [event.image_url] : []),
     ...(event.photos ?? []).flatMap((item) => (item.url && item.url !== event.image_url ? [item.url] : [])),
   ]
+  const sponsors = event.sponsors ?? []
 
   return (
     <>
@@ -43,34 +44,54 @@ export function EventPage() {
           <p className="lede">{event.summary}</p>
         </div>
       </header>
-      <article className="section" style={{ paddingTop: '1rem' }}>
+      <article className="section event-sheet" style={{ paddingTop: '1rem' }}>
         <div className="wrap detail">
-          <div>
-            {shots.length > 0 && (
-              <div className="event-photos">
-                {shots.map((url) => (
-                  <button key={url} className="zoom" type="button" aria-label="Ampliar foto" onClick={() => setPhoto(url)}>
-                    <img src={url} alt={event.title} />
-                  </button>
-                ))}
-              </div>
-            )}
-            <div className="facts">
-              <div><span>Ano</span>{event.year}</div>
-              <div><span>Situação</span>{statusLabel[event.status]}</div>
-              {event.location && <div><span>Local</span>{event.location}</div>}
-              {event.ends_at && <div><span>Até</span>{formatWhen(event.ends_at)}</div>}
-            </div>
+          <div className="facts">
+            <div><span>Ano</span>{event.year}</div>
+            <div><span>Situação</span>{statusLabel[event.status]}</div>
+            {event.location && <div><span>Local</span>{event.location}</div>}
+            {event.ends_at && <div><span>Até</span>{formatWhen(event.ends_at)}</div>}
           </div>
           <Prose value={event.body ?? ''} />
         </div>
+        {shots.length > 0 && (
+          <div className="wrap event-photos">
+            {shots.map((url) => (
+              <button key={url} className="zoom" type="button" aria-label="Ampliar foto" onClick={() => setPhoto({ url, caption: event.title })}>
+                <img src={url} alt={event.title} />
+              </button>
+            ))}
+          </div>
+        )}
+        {sponsors.length > 0 && (
+          <div className="wrap event-support">
+            <p className="section-index"><span>Apoio</span> Patrocinadores</p>
+            <div className="event-sponsors">
+              {sponsors.map((sponsor, index) => {
+                const site = safeUrl(sponsor.url)
+                return (
+                  <article key={`${sponsor.name}-${index}`}>
+                    {sponsor.image_url && (
+                      <button className="zoom" type="button" aria-label={`Ampliar foto de ${sponsor.name}`} onClick={() => setPhoto({ url: sponsor.image_url as string, caption: sponsor.name })}>
+                        <img src={sponsor.image_url} alt={sponsor.name} />
+                      </button>
+                    )}
+                    <strong>{sponsor.name}</strong>
+                    {sponsor.note && <p>{sponsor.note}</p>}
+                    {site && <a href={site} target="_blank" rel="noreferrer">Site</a>}
+                  </article>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </article>
       {photo && (
-        <div className="lightbox" role="dialog" aria-modal="true" aria-label={event.title} onClick={() => setPhoto(null)}>
+        <div className="lightbox" role="dialog" aria-modal="true" aria-label={photo.caption} onClick={() => setPhoto(null)}>
           <figure onClick={(click) => click.stopPropagation()}>
-            <img src={photo} alt={event.title} />
+            <img src={photo.url} alt={photo.caption} />
             <figcaption>
-              <strong>{event.title}</strong>
+              <strong>{photo.caption}</strong>
               <button className="btn btn-ghost" type="button" onClick={() => setPhoto(null)}>Fechar</button>
             </figcaption>
           </figure>

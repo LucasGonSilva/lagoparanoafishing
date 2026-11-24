@@ -25,6 +25,7 @@ class FishingEvent extends Model
         'year',
         'image_path',
         'photos',
+        'sponsors',
         'active',
     ];
 
@@ -35,6 +36,7 @@ class FishingEvent extends Model
             'ends_at' => 'datetime',
             'year' => 'integer',
             'photos' => 'array',
+            'sponsors' => 'array',
             'active' => 'boolean',
         ];
     }
@@ -59,6 +61,12 @@ class FishingEvent extends Model
                 $paths[] = $path;
             }
         }
+        foreach ($this->sponsors ?? [] as $sponsor) {
+            $path = is_array($sponsor) ? ($sponsor['image_path'] ?? null) : null;
+            if (is_string($path) && $path !== '') {
+                $paths[] = $path;
+            }
+        }
 
         return $paths;
     }
@@ -79,6 +87,33 @@ class FishingEvent extends Model
         return $photos;
     }
 
+    public function sponsorList(): array
+    {
+        $sponsors = [];
+        foreach ($this->sponsors ?? [] as $sponsor) {
+            if (! is_array($sponsor)) {
+                continue;
+            }
+            $name = trim((string) ($sponsor['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $path = $sponsor['image_path'] ?? null;
+            $path = is_string($path) && $path !== '' ? $path : null;
+            $url = $sponsor['url'] ?? null;
+            $note = $sponsor['note'] ?? null;
+            $sponsors[] = [
+                'name' => $name,
+                'image_path' => $path,
+                'image_url' => Media::url($path),
+                'url' => is_string($url) && $url !== '' ? $url : null,
+                'note' => is_string($note) && trim($note) !== '' ? trim($note) : null,
+            ];
+        }
+
+        return $sponsors;
+    }
+
     public function toApiArray(): array
     {
         return [
@@ -95,6 +130,7 @@ class FishingEvent extends Model
             'image_path' => $this->image_path,
             'image_url' => Media::url($this->image_path),
             'photos' => $this->photoList(),
+            'sponsors' => $this->sponsorList(),
             'active' => $this->active,
             'updated_at' => Dates::iso($this->updated_at),
         ];

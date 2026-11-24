@@ -114,6 +114,11 @@ class ContentController extends Controller
                 'image_path' => $image,
                 'photos' => ['nullable', 'array', 'max:30'],
                 'photos.*' => ['string', 'max:255', 'regex:/^midia\/[A-Za-z0-9][A-Za-z0-9._-]*$/'],
+                'sponsors' => ['nullable', 'array', 'max:20'],
+                'sponsors.*.name' => ['required', 'string', 'max:160'],
+                'sponsors.*.image_path' => $image,
+                'sponsors.*.url' => ['nullable', 'url', 'max:255'],
+                'sponsors.*.note' => ['nullable', 'string', 'max:400'],
                 'active' => ['sometimes', 'boolean'],
             ],
             'products' => [
@@ -236,6 +241,7 @@ class ContentController extends Controller
 
         if ($type === 'events') {
             $data['photos'] = array_values($data['photos'] ?? []);
+            $data['sponsors'] = $this->sponsors($data['sponsors'] ?? []);
         }
 
         if ($type === 'clients') {
@@ -247,6 +253,57 @@ class ContentController extends Controller
         }
 
         return $data;
+    }
+
+    private function sponsors(array $sponsors): array
+    {
+        $clean = [];
+
+        foreach ($sponsors as $index => $sponsor) {
+            if (! is_array($sponsor)) {
+                throw ValidationException::withMessages([
+                    "sponsors.$index" => 'O patrocinador não veio num formato válido.',
+                ]);
+            }
+
+            $name = trim((string) ($sponsor['name'] ?? ''));
+            if ($name === '') {
+                throw ValidationException::withMessages([
+                    "sponsors.$index.name" => 'Informe o nome do patrocinador.',
+                ]);
+            }
+
+            $path = $sponsor['image_path'] ?? null;
+            if ($path === '' || $path === null) {
+                $path = null;
+            } elseif (! is_string($path) || ! preg_match('/^midia\/[A-Za-z0-9][A-Za-z0-9._-]*$/', $path)) {
+                throw ValidationException::withMessages([
+                    "sponsors.$index.image_path" => 'A foto do patrocinador não é válida.',
+                ]);
+            }
+
+            $url = trim((string) ($sponsor['url'] ?? ''));
+            if ($url === '') {
+                $url = null;
+            } else {
+                $scheme = parse_url($url, PHP_URL_SCHEME);
+                if (! filter_var($url, FILTER_VALIDATE_URL) || ! in_array($scheme, ['http', 'https'], true)) {
+                    throw ValidationException::withMessages([
+                        "sponsors.$index.url" => 'O site do patrocinador precisa começar com http:// ou https://.',
+                    ]);
+                }
+            }
+
+            $note = trim((string) ($sponsor['note'] ?? ''));
+            $clean[] = [
+                'name' => $name,
+                'image_path' => $path,
+                'url' => $url,
+                'note' => $note === '' ? null : $note,
+            ];
+        }
+
+        return $clean;
     }
 
     private function videos(array $videos): array

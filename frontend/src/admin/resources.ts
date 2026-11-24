@@ -3,7 +3,7 @@ export type Field =
   | { kind: 'select'; name: string; label: string; options: { value: string; label: string }[] }
   | { kind: 'checkbox'; name: string; label: string }
   | { kind: 'image'; name: string; label: string; required?: boolean }
-  | { kind: 'photos' | 'videos'; name: string; label: string; hint?: string }
+  | { kind: 'photos' | 'videos' | 'sponsors'; name: string; label: string; hint?: string }
 
 export type ResourceConfig = {
   title: string
@@ -33,7 +33,7 @@ export const resources: Record<string, ResourceConfig> = {
     title: 'Eventos',
     singular: 'evento',
     createTitle: 'Novo evento',
-    hint: 'Cada evento entra num ano. A página pública separa a lista por ano.',
+    hint: 'Cada evento entra num ano. Dá para incluir os patrocinadores daquele evento, com nome, foto, site e nota.',
     fields: [
       { kind: 'text', name: 'title', label: 'Título', required: true },
       slug,
@@ -55,6 +55,7 @@ export const resources: Record<string, ResourceConfig> = {
       },
       { kind: 'image', name: 'image_path', label: 'Imagem', hint: 'Foto principal. No site, o clique amplia.' },
       { kind: 'photos', name: 'photos', label: 'Mais fotos', hint: 'Cada foto abre ampliada no site. JPG, PNG ou WebP.' },
+      { kind: 'sponsors', name: 'sponsors', label: 'Patrocinadores', hint: 'Um ou vários. Nome, foto, site e uma nota. A ordem daqui é a ordem no site. Pode ficar sem patrocinador.' },
       visible,
     ],
   },
