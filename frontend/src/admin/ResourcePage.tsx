@@ -5,6 +5,33 @@ import { itemLabel, resources, type Field } from './resources'
 
 type Item = Record<string, unknown> & { id: number; active?: boolean; image_url?: string | null }
 
+type SponsorDraft = {
+  name: string
+  image_path: string
+  image_url: string
+  url: string
+  note: string
+}
+
+function sponsorDrafts(value: unknown): SponsorDraft[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+  return value.flatMap((item) => {
+    if (!item || typeof item !== 'object') {
+      return []
+    }
+    const row = item as Record<string, unknown>
+    return [{
+      name: typeof row.name === 'string' ? row.name : '',
+      image_path: typeof row.image_path === 'string' ? row.image_path : '',
+      image_url: typeof row.image_url === 'string' ? row.image_url : '',
+      url: typeof row.url === 'string' ? row.url : '',
+      note: typeof row.note === 'string' ? row.note : '',
+    }]
+  })
+}
+
 function emptyForm(fields: Field[]): Record<string, unknown> {
   const form: Record<string, unknown> = {}
   for (const field of fields) {
@@ -16,7 +43,7 @@ function emptyForm(fields: Field[]): Record<string, unknown> {
       form[field.name] = field.options[0]?.value ?? ''
     } else if (field.kind === 'datetime' && field.name === 'published_at') {
       form[field.name] = toInputDateTime(new Date().toISOString())
-    } else if (field.kind === 'photos' || field.kind === 'videos') {
+    } else if (field.kind === 'photos' || field.kind === 'videos' || field.kind === 'sponsors') {
       form[field.name] = []
     } else if ('defaultValue' in field && field.defaultValue) {
       form[field.name] = field.defaultValue
@@ -39,6 +66,8 @@ function formFromItem(fields: Field[], item: Item): Record<string, unknown> {
       form[field.name] = Boolean(value)
     } else if (field.kind === 'photos' || field.kind === 'videos') {
       form[field.name] = Array.isArray(value) ? value : []
+    } else if (field.kind === 'sponsors') {
+      form[field.name] = sponsorDrafts(value)
     } else if (field.kind === 'number') {
       form[field.name] = value === null || value === undefined || value === '' ? '' : value
     } else {
@@ -73,6 +102,21 @@ function payloadFrom(fields: Field[], form: Record<string, unknown>): Record<str
             return []
           })
         : []
+    } else if (field.kind === 'sponsors') {
+      payload[field.name] = sponsorDrafts(value).flatMap((item) => {
+        const name = item.name.trim()
+        const url = item.url.trim()
+        const note = item.note.trim()
+        if (!name && !item.image_path && !url && !note) {
+          return []
+        }
+        return [{
+          name,
+          image_path: item.image_path || null,
+          url: url || null,
+          note: note || null,
+        }]
+      })
     } else if (field.kind === 'number') {
       payload[field.name] = value === '' || value === null ? null : Number(value)
     } else if (value === '') {
@@ -121,6 +165,11 @@ export function ResourcePage({ type }: { type: string }) {
       setError('Envie uma imagem antes de salvar.')
       return
     }
+    const nameless = sponsorDrafts(editing.sponsors).find((item) => !item.name.trim() && (item.image_path || item.url.trim() || item.note.trim()))
+    if (nameless) {
+      setError('Todo patrocinador precisa de um nome.')
+      return
+    }
     setPending(true)
     setError(null)
     const body = JSON.stringify(payloadFrom(config.fields, editing))
@@ -153,14 +202,14 @@ export function ResourcePage({ type }: { type: string }) {
     }
   }
 
-  async function upload(file: File, target: 'image' | 'photos' | 'videos' = 'image') {
+  async function upload(file: File, target: 'image' | 'photos' | 'videos' = 'image', sponsorIndex?: number) {
     setUploading(true)
     setError(null)
     try {
       const body = new FormData()
       body.append('file', file)
       const result = await api<{ path: string; url: string; kind: 'image' | 'video' }>('/api/admin/uploads', { method: 'POST', body })
-      if (target === 'photos' && result.kind !== 'image') {
+      if ((target === 'photos' || sponsorIndex !== undefined) && result.kind !== 'image') {
         throw new Error('Essa vaga é só para foto.')
       }
       if (target === 'videos' && result.kind !== 'video') {
@@ -169,6 +218,15 @@ export function ResourcePage({ type }: { type: string }) {
       setEditing((current) => {
         if (!current) {
           return current
+        }
+        if (sponsorIndex !== undefined) {
+          const sponsors = sponsorDrafts(current.sponsors)
+          sponsors[sponsorIndex] = {
+            ...(sponsors[sponsorIndex] ?? { name: '', image_path: '', image_url: '', url: '', note: '' }),
+            image_path: result.path,
+            image_url: result.url,
+          }
+          return { ...current, sponsors }
         }
         if (target === 'photos') {
           const photos = Array.isArray(current.photos) ? current.photos : []
@@ -318,6 +376,128 @@ export function ResourcePage({ type }: { type: string }) {
               </div>
             )
           }
+          if (field.kind === 'sponsors') {
+            const sponsors = sponsorDrafts(editing[field.name])
+            const patch = (next: SponsorDraft[]) => setEditing({ ...editing, [field.name]: next })
+            return (
+              <div className="field" key={field.name}>
+                <span>{field.label}</span>
+                <div className="sponsor-editor">
+                  {sponsors.map((sponsor, index) => (
+                    <div className="sponsor-card" key={index}>
+                      <label className="field">
+                        <span>Nome</span>
+                        <input
+                          value={sponsor.name}
+                          onChange={(event) => {
+                            const next = [...sponsors]
+                            next[index] = { ...sponsor, name: event.target.value }
+                            patch(next)
+                          }}
+                        />
+                      </label>
+                      <label className="field">
+                        <span>Nota</span>
+                        <input
+                          value={sponsor.note}
+                          onChange={(event) => {
+                            const next = [...sponsors]
+                            next[index] = { ...sponsor, note: event.target.value }
+                            patch(next)
+                          }}
+                        />
+                      </label>
+                      <label className="field">
+                        <span>Site</span>
+                        <input
+                          type="url"
+                          placeholder="https://"
+                          value={sponsor.url}
+                          onChange={(event) => {
+                            const next = [...sponsors]
+                            next[index] = { ...sponsor, url: event.target.value }
+                            patch(next)
+                          }}
+                        />
+                      </label>
+                      <div className="field">
+                        <span>Foto</span>
+                        {sponsor.image_url && <img className="preview" src={sponsor.image_url} alt="" />}
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0]
+                            event.target.value = ''
+                            if (file) {
+                              void upload(file, 'image', index)
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="sponsor-actions">
+                        <button
+                          className="btn btn-ghost"
+                          type="button"
+                          disabled={index === 0}
+                          onClick={() => {
+                            const next = [...sponsors]
+                            const [item] = next.splice(index, 1)
+                            next.splice(index - 1, 0, item)
+                            patch(next)
+                          }}
+                        >
+                          Subir
+                        </button>
+                        <button
+                          className="btn btn-ghost"
+                          type="button"
+                          disabled={index === sponsors.length - 1}
+                          onClick={() => {
+                            const next = [...sponsors]
+                            const [item] = next.splice(index, 1)
+                            next.splice(index + 1, 0, item)
+                            patch(next)
+                          }}
+                        >
+                          Descer
+                        </button>
+                        {sponsor.image_path && (
+                          <button
+                            className="btn btn-ghost"
+                            type="button"
+                            onClick={() => {
+                              const next = [...sponsors]
+                              next[index] = { ...sponsor, image_path: '', image_url: '' }
+                              patch(next)
+                            }}
+                          >
+                            Tirar foto
+                          </button>
+                        )}
+                        <button
+                          className="btn btn-danger"
+                          type="button"
+                          onClick={() => patch(sponsors.filter((_, itemIndex) => itemIndex !== index))}
+                        >
+                          Tirar patrocinador
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className="btn btn-ghost"
+                  type="button"
+                  onClick={() => patch([...sponsors, { name: '', image_path: '', image_url: '', url: '', note: '' }])}
+                >
+                  Adicionar patrocinador
+                </button>
+                {field.hint && <p className="hint">{field.hint}</p>}
+                {uploading && <p className="hint">Enviando imagem…</p>}
+              </div>
+            )
+          }
           if (field.kind === 'select') {
             return (
               <label className="field" key={field.name}>
@@ -386,7 +566,7 @@ export function ResourcePage({ type }: { type: string }) {
         {visibleItems.map((item) => (
           <article className="record" key={item.id}>
             <button className="linkish" type="button" onClick={() => { setError(null); setEditing(formFromItem(config.fields, item)) }}>
-              <h2>{itemLabel(item)}{item.year ? ` · ${String(item.year)}` : ''}{item.edition_year ? ` · Edição ano de ${String(item.edition_year)}` : ''}{type === 'clients' && item.location ? ` · ${String(item.location)}` : ''}{type === 'people' && item.role ? ` · ${String(item.role)}` : ''}</h2>
+              <h2>{itemLabel(item)}{item.year ? ` · ${String(item.year)}` : ''}{item.edition_year ? ` · Edição ano de ${String(item.edition_year)}` : ''}{type === 'clients' && item.location ? ` · ${String(item.location)}` : ''}{type === 'people' && item.role ? ` · ${String(item.role)}` : ''}{type === 'events' && Array.isArray(item.sponsors) && item.sponsors.length > 0 ? ` · ${item.sponsors.length} ${item.sponsors.length === 1 ? 'patrocinador' : 'patrocinadores'}` : ''}</h2>
               <span className={item.active === false ? 'badge off' : 'badge'}>{item.active === false ? 'Oculto' : 'No ar'}</span>
             </button>
             <button className="btn btn-danger" type="button" onClick={() => void remove(item)}>Excluir</button>

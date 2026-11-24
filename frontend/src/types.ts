@@ -8,6 +8,14 @@ export type Rule = {
   active: boolean
 }
 
+export type EventSponsor = {
+  name: string
+  image_path: string | null
+  image_url: string | null
+  url: string | null
+  note: string | null
+}
+
 export type FishingEvent = {
   id: number
   title: string
@@ -22,6 +30,7 @@ export type FishingEvent = {
   image_path: string | null
   image_url: string | null
   photos: TripPhoto[]
+  sponsors: EventSponsor[]
   active: boolean
 }
 
